@@ -3,7 +3,7 @@ resource "azurerm_app_service_plan" "asp" {
   location            = var.location
   resource_group_name = var.resource_group_name
   kind                = "Linux"
-  reserved = true
+  reserved            = true
 
   sku {
     tier = "Standard"
@@ -25,9 +25,11 @@ resource "azurerm_app_service" "webapp" {
   app_settings = {
     "WEBSITES_PORT" = "80"
   }
-identity {
+
+  identity {
     type = "SystemAssigned"
   }
+
   tags = local.common_tags
 }
 
@@ -48,17 +50,6 @@ resource "azurerm_virtual_network" "vnet" {
     name           = "webapp-subnet"
     address_prefix = "10.0.1.0/24"
   }
-}
-
-resource "azurerm_subnet_network_security_group_association" "subnet_nsg" {
-  subnet_id                 = azurerm_virtual_network.vnet.subnet[0].id
-  network_security_group_id = azurerm_network_security_group.nsg.id
-}
-
-resource "azurerm_network_security_group" "nsg" {
-  name                = "webapp-nsg"
-  location            = var.location
-  resource_group_name = var.resource_group_name
 }
 
 resource "azurerm_application_gateway" "waf" {
@@ -97,19 +88,15 @@ resource "azurerm_application_gateway" "waf" {
     name                           = "tetris-http-listener"
     frontend_ip_configuration_name = "tetris-frontend-ip"
     frontend_port_name             = "http-port"
+    protocol                       = "Http"
   }
 
   request_routing_rule {
     name                       = "tetris-routing-rule"
-    rule_type                  = "PathBasedRouting"
+    rule_type                  = "Basic"
     http_listener_name         = azurerm_application_gateway.waf.http_listener[0].name
     backend_address_pool_name  = azurerm_application_gateway.waf.backend_address_pool[0].name
     backend_http_settings_name = azurerm_application_gateway.waf.backend_http_settings[0].name
-
-    path_based_routing_configuration {
-      paths = ["/*"]
-      backend_address_pool_name = azurerm_application_gateway.waf.backend_address_pool[0].name
-    }
   }
 
   connection_draining {
@@ -121,94 +108,4 @@ resource "azurerm_application_gateway" "waf" {
   tags = {
     environment = "production"
   }
-}
-
-resource "azurerm_application_gateway_web_application_firewall_policy" "waf_policy" {
-  name                = "webapp-waf-policy"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-
-  policy {
-    mode = "Prevention"
-
-    custom_rules {
-      name = "rule-1"
-      rule_type = "MatchRule"
-      action = "Block"
-      priority = 1
-      match_conditions {
-        match_variables {
-          variable_name = "RemoteAddr"
-          selector = "RemoteAddr"
-        }
-        match_values = ["1.2.3.4"]  # Add the IP address you want to block
-        operator = "IPMatch"
-      }
-    }
-  }
-}
-
-resource "azurerm_application_gateway_web_application_firewall_policy_association" "waf_policy_association" {
-  resource_group_name = var.resource_group_name
-  application_gateway_name       = azurerm_application_gateway.waf.name
-  web_application_firewall_policy_id = azurerm_application_gateway_web_application_firewall_policy.waf_policy.id
-}
-
-resource "azurerm_application_gateway_request_routing_rule" "waf_routing_rule" {
-  resource_group_name = var.resource_group_name
-  application_gateway_name     = azurerm_application_gateway.waf.name
-  name                         = "waf-routing-rule"
-  rule_type                    = "Basic"
-  http_listener_name           = azurerm_application_gateway.waf.http_listener[0].name
-  backend_address_pool_name    = azurerm_application_gateway.waf.backend_address_pool[0].name
-  backend_http_settings_name   = azurerm_application_gateway.waf.backend_http_settings[0].name
-  path_map {
-    priority = 1
-    path     = "/"
-    backend_address_pool_name = azurerm_application_gateway.waf.backend_address_pool[0].name
-  }
-}
-
-resource "azurerm_application_gateway_probe" "waf_probe" {
-  resource_group_name = var.resource_group_name
-  application_gateway_name = azurerm_application_gateway.waf.name
-  name                    = "waf-probe"
-  protocol                = "Http"
-  host                    = "localhost"
-  path                    = "/"
-  interval                = 30
-  timeout                 = 30
-  unhealthy_threshold     = 3
-  pick_host_name_from_backend_http_settings = true
-}
-
-resource "azurerm_application_gateway_backend_http_settings" "waf_backend_http_settings" {
-  resource_group_name = var.resource_group_name
-  application_gateway_name = azurerm_application_gateway.waf.name
-  name                    = "waf-backend-http-settings"
-  port                    = 80
-  protocol                = "Http"
-  cookie_based_affinity   = "Enabled"
-}
-
-resource "azurerm_application_gateway_backend_address_pool" "waf_backend_address_pool" {
-  resource_group_name = var.resource_group_name
-  application_gateway_name = azurerm_application_gateway.waf.name
-  name                    = "waf-backend-address-pool"
-}
-
-resource "azurerm_application_gateway_http_listener" "waf_http_listener" {
-  resource_group_name = var.resource_group_name
-  application_gateway_name = azurerm_application_gateway.waf.name
-  name                    = "waf-http-listener"
-  frontend_ip_configuration_name = azurerm_application_gateway.waf.frontend_ip_configuration[0].name
-  frontend_port_name             = azurerm_application_gateway.waf.frontend_port[0].name
-  protocol                        = "Http"
-}
-
-resource "azurerm_application_gateway_frontend_ip_configuration" "waf_frontend_ip_configuration" {
-  resource_group_name = var.resource_group_name
-  application_gateway_name = azurerm_application_gateway.waf.name
-  name                    = "waf-frontend-ip-configuration"
-  public_ip_address_id    = "public_ip_address_id = azurerm_public_ip.waf_public_ip."
 }
