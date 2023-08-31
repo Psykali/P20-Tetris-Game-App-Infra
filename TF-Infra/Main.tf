@@ -127,7 +127,7 @@ sku{
 
 # Create the first Web App for Linux
 resource "azurerm_app_service" "webapp1" {
-name                ="webapp1-${random_string.rs.result}"
+name                ="webapp1"
   location            = var.location
   resource_group_name = var.resource_group_name
   app_service_plan_id = azurerm_app_service_plan.example.id
@@ -141,7 +141,7 @@ name                ="webapp1-${random_string.rs.result}"
 }
 # Create the second Web App for Linux
 resource "azurerm_app_service" "webapp2" {
-  name                ="webapp2-${random_string.rs.result}"
+  name                ="webapp2"
   location            = var.location
   resource_group_name = var.resource_group_name
   app_service_plan_id = azurerm_app_service_plan.example.id
