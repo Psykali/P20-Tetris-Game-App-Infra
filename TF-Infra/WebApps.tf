@@ -31,16 +31,45 @@ identity {
   tags = local.common_tags
 }
 
+resource "azurerm_public_ip" "waf_public_ip" {
+  name                = "waf-public-ip"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+}
+
+resource "azurerm_virtual_network" "vnet" {
+  name                = "webapp-vnet"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  address_space       = ["10.0.0.0/16"]
+
+  subnet {
+    name           = "webapp-subnet"
+    address_prefix = "10.0.1.0/24"
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "subnet_nsg" {
+  subnet_id                 = azurerm_virtual_network.vnet.subnet[0].id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
+
+resource "azurerm_network_security_group" "nsg" {
+  name                = "webapp-nsg"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+}
 
 resource "azurerm_application_gateway" "waf" {
   name                = "tetris-waf"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
+  location            = var.location
+  resource_group_name = var.resource_group_name
   sku                 = "Standard_Small"
 
   gateway_ip_configuration {
     name      = "tetris-gateway-ip"
-    subnet_id = "/subscriptions/your-subscription-id/resourceGroups/your-resource-group-name/providers/Microsoft.Network/virtualNetworks/your-vnet-name/subnets/your-subnet-name"
+    subnet_id = azurerm_virtual_network.vnet.subnet[0].id
   }
 
   frontend_port {
@@ -50,7 +79,7 @@ resource "azurerm_application_gateway" "waf" {
 
   frontend_ip_configuration {
     name                 = "tetrismy-frontend-ip"
-    public_ip_address_id = "/subscriptions/your-subscription-id/resourceGroups/your-resource-group-name/providers/Microsoft.Network/publicIPAddresses/your-public-ip-name"
+    public_ip_address_id = azurerm_public_ip.waf_public_ip.id
   }
 
   backend_address_pool {
@@ -96,8 +125,8 @@ resource "azurerm_application_gateway" "waf" {
 
 resource "azurerm_application_gateway_web_application_firewall_policy" "waf_policy" {
   name                = "webapp-waf-policy"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   policy {
     mode = "Prevention"
@@ -172,4 +201,14 @@ resource "azurerm_application_gateway_http_listener" "waf_http_listener" {
   resource_group_name = var.resource_group_name
   application_gateway_name = azurerm_application_gateway.waf.name
   name                    = "waf-http-listener"
-  frontend_ip_configuration_name = azurerm_application_gateway
+  frontend_ip_configuration_name = azurerm_application_gateway.waf.frontend_ip_configuration[0].name
+  frontend_port_name             = azurerm_application_gateway.waf.frontend_port[0].name
+  protocol                        = "Http"
+}
+
+resource "azurerm_application_gateway_frontend_ip_configuration" "waf_frontend_ip_configuration" {
+  resource_group_name = var.resource_group_name
+  application_gateway_name = azurerm_application_gateway.waf.name
+  name                    = "waf-frontend-ip-configuration"
+  public_ip_address_id    = "public_ip_address_id = azurerm_public_ip.waf_public_ip."
+}
