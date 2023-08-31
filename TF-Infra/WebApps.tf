@@ -30,7 +30,7 @@ identity {
   }
   tags = local.common_tags
 }
-}
+
 
 resource "azurerm_application_gateway" "waf" {
   name                = "tetris-waf"
