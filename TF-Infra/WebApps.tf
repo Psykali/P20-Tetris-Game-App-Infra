@@ -78,7 +78,7 @@ resource "azurerm_application_gateway" "waf" {
     public_ip_address_id = azurerm_public_ip.waf_public_ip.id
   }
   backend_address_pool {
-    name         = local.backend_address_pool_name
+    name         = "tetris-backend-pool"
     ip_addresses = [for app in azurerm_app_service.webapp : app.default_site_hostname]
    }
    backend_http_settings {
