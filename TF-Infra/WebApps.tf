@@ -64,7 +64,6 @@ resource "azurerm_application_gateway" "waf" {
   gateway_ip_configuration {
     name      = "tetris-gateway-ip"
     subnet_id = tolist(azurerm_virtual_network.vnet.subnet)[0].id
-    http_listener_name = tolist(azurerm_application_gateway.waf.http_listener)[0].name
   }
 
   frontend_port {
@@ -101,10 +100,6 @@ resource "azurerm_application_gateway" "waf" {
     http_listener_name = tolist(azurerm_application_gateway.waf.http_listener)[0].name
     backend_address_pool_name = tolist(azurerm_application_gateway.waf.backend_address_pool)[0].name
     backend_http_settings_name = tolist(azurerm_application_gateway.waf.backend_http_settings)[0].name
-  }
-
-  connection_draining {
-    enabled = true
   }
 
   enable_http2 = true
