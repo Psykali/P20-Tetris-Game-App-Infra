@@ -79,7 +79,7 @@ resource "azurerm_application_gateway" "waf" {
   }
   backend_address_pool {
     name         = "tetris-backend-pool"
-    ip_addresses = [for app in azurerm_app_service.webapp : app.default_site_hostname]
+    ip_addresses = split(",", azurerm_app_service.webapp[0].outbound_ip_addresses)
    }
    backend_http_settings {
         name                  ="httpSettingName1"
