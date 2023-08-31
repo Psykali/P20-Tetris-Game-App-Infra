@@ -79,7 +79,7 @@ resource "azurerm_application_gateway" "waf" {
   }
   backend_address_pool {
     name         = local.backend_address_pool_name
-    ip_addresses = [for app in azurerm_app_service.app : app.default_site_hostname]
+    ip_addresses = [for app in azurerm_app_service.webapp : app.default_site_hostname]
    }
    backend_http_settings {
         name                  ="httpSettingName1"
