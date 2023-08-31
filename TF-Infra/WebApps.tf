@@ -56,7 +56,10 @@ resource "azurerm_application_gateway" "waf" {
   name                = "tetris-waf"
   location            = var.location
   resource_group_name = var.resource_group_name
-  sku                 = "Standard_Small"
+  sku {
+    name = "Standard_Small"
+    tier = "Standard"
+  }
 
   gateway_ip_configuration {
     name      = "tetris-gateway-ip"
