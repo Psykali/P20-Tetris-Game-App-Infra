@@ -74,7 +74,7 @@ resource "azurerm_application_gateway" "appgw" {
     probe_name            = "http-probe"
 
     # Use the hostname from the backend HTTP settings
-    pick_host_name_from_backend_http_settings = true
+#    pick_host_name_from_backend_http_settings = true
   }
 
 http_listener {
