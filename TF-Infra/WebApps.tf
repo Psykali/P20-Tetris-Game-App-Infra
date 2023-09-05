@@ -2,6 +2,7 @@ resource "azurerm_application_insights" "tetris_ai" {
   name                = "tetris-ai"
   location            = var.location
   resource_group_name = var.resource_group_name
+  application_type    = "web"
 }
 
 resource "azurerm_app_insights" "tetris_appinsights" {
