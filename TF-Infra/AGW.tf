@@ -72,6 +72,7 @@ resource "azurerm_application_gateway" "tetris_appgw" {
     http_listener_name         = "tetris"
     backend_address_pool_name  = "tetris"
     backend_http_settings_name = "tetrisback"
+    priority                   = 1
   }
   probe {
     name                = "tetris_health"
