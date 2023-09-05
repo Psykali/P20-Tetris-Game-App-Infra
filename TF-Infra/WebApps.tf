@@ -28,11 +28,11 @@ XML
 }
 
 output "webtest_id" {
-  value = azurerm_application_insights_web_test.example.id
+  value = azurerm_application_insights_web_test.tetris_appinsights.id
 }
 
 output "webtests_synthetic_id" {
-  value = azurerm_application_insights_web_test.example.synthetic_monitor_id
+  value = azurerm_application_insights_web_test.tetris_appinsights.synthetic_monitor_id
 }
 
 
