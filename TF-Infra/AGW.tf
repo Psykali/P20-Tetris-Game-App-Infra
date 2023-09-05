@@ -23,7 +23,6 @@ resource "azurerm_subnet" "tetris_subnet" {
   virtual_network_name = azurerm_virtual_network.tetris_vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 
-  tags = local.common_tags
 }
 
 resource "azurerm_application_gateway" "tetris_appgw" {
