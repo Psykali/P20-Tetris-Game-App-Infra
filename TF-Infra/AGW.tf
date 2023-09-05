@@ -32,10 +32,6 @@ resource "azurerm_application_gateway" "tetris_appgw" {
  
   backend_address_pool {
     name = "tetris"
-    ip_configuration {
-      name = "ipconfig1"
-      subnet_id = azurerm_subnet.tetris_subnet.id
-    }
   }
 
   sku {
