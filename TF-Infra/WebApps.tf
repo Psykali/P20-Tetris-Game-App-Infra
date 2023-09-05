@@ -34,12 +34,7 @@ output "webtest_id" {
 output "webtests_synthetic_id" {
   value = azurerm_application_insights_web_test.example.synthetic_monitor_id
 }
-  depends_on = [
-        azurerm_application_insights.tetris_ai,
-         azurerm_app_service.tetris_webapps[0]
-  ]
-  
-}
+
 
 resource "azurerm_app_service_plan" "tetris_asp" {
   name                = "tetris-asp"
