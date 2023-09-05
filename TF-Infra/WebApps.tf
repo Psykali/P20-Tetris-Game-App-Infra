@@ -32,6 +32,16 @@ resource "azurerm_app_insights" "tetris_appinsights" {
   }
 }
 
+resource "azurerm_app_service_plan" "tetris_asp" {
+  name                = "tetris-asp"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  sku {
+    tier = "Standard"
+    size = "S1"
+  }
+}
+
 resource "azurerm_app_service" "tetris_webapps" {
   count               = 3
   name                = "sktetris-${count.index}"
