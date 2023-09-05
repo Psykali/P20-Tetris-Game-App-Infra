@@ -4,9 +4,11 @@ resource "azurerm_public_ip" "tetris_public_ip" {
   resource_group_name = var.resource_group_name
 
   allocation_method = "Static"
+  sku               = "Standard"
 
   tags = local.common_tags
 }
+
 
 resource "azurerm_virtual_network" "tetris_vnet" {
   name                = "tetris"
