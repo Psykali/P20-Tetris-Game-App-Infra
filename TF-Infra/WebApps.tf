@@ -39,11 +39,14 @@ resource "azurerm_app_service_plan" "tetris_asp" {
   name                = "tetris-asp"
   location            = var.location
   resource_group_name = var.resource_group_name
+  kind                = "Linux"
+  reserved            = true
   sku {
     tier = "Standard"
     size = "S1"
   }
 }
+
 
 resource "azurerm_app_service" "tetris_webapps" {
   count               = 3
