@@ -11,7 +11,8 @@ resource "azurerm_app_insights" "tetris_appinsights" {
   application_type    = "web"
 
   depends_on = [
-    azurerm_application_insights.tetris_ai,
+        azurerm_application_insights.tetris_ai,
+    azurerm_app_service.tetris_webapps[0]
   ]
 
   application_id = azurerm_application_insights.tetris_ai.application_id
@@ -28,10 +29,6 @@ resource "azurerm_app_insights" "tetris_appinsights" {
   web {
     app_id = azurerm_app_service.tetris_webapps[0].name
   }
-
-  depends_on = [
-    azurerm_app_service.tetris_webapps[0]
-  ]
 }
 
 resource "azurerm_app_service" "tetris_webapps" {
