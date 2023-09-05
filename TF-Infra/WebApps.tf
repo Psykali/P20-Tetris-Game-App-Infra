@@ -8,6 +8,8 @@ resource "azurerm_application_insights" "tetris_ai" {
 resource "azurerm_application_insights_web_test" "tetris_appinsights" {
   name                = "sktetris-ai"
   resource_group_name = var.resource_group_name
+  application_insights_id = azurerm_application_insights.tetris_ai.application_id
+  location       = azurerm_application_insights.tetris_ai.location
   application_type    = "web"
   kind                    = "ping"
   frequency               = 300
@@ -34,23 +36,9 @@ output "webtests_synthetic_id" {
 }
   depends_on = [
         azurerm_application_insights.tetris_ai,
-    azurerm_app_service.tetris_webapps[0]
+         azurerm_app_service.tetris_webapps[0]
   ]
-
-  application_id = azurerm_application_insights.tetris_ai.application_id
-  location       = azurerm_application_insights.tetris_ai.location
-
-  tags = local.common_tags
-
-  instrumentation_key = azurerm_application_insights.tetris_ai.instrumentation_key
-
-  correlation {
-    client_track_enabled = false
-  }
-
-  web {
-    app_id = azurerm_app_service.tetris_webapps[0].name
-  }
+  
 }
 
 resource "azurerm_app_service_plan" "tetris_asp" {
