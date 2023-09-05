@@ -29,7 +29,12 @@ resource "azurerm_application_gateway" "tetris_appgw" {
   name                = "tetris"
   location            = var.location
   resource_group_name = var.resource_group_name
-  sku                 = "Standard_v2"
+
+  sku {
+  name = "Standard_v2"
+  tier = "Standard_v2"
+ }
+
   gateway_ip_configuration {
     name      = "appGatewayIpConfig"
     subnet_id = azurerm_subnet.tetris_subnet.id
@@ -42,14 +47,7 @@ resource "azurerm_application_gateway" "tetris_appgw" {
     name                 = "appGwPublicFrontendIpIPv4"
     public_ip_address_id = azurerm_public_ip.tetris_public_ip.id
   }
-  backend_address_pool {
-    name = "tetris"
-    backend_addresses = [
-      "sktetris-1.azurewebsites.net",
-      "sktetris-2.azurewebsites.net",
-      "sktetris-3.azurewebsites.net",
-    ]
-  }
+  
   backend_http_settings {
     name                  = "tetrisback"
     port                  = 80
@@ -80,7 +78,7 @@ resource "azurerm_application_gateway" "tetris_appgw" {
     timeout             = 30
     unhealthy_threshold = 3
     match {
-      status_codes = ["200-399"]
+      status_code = ["200-399"]
     }
   }
   autoscale_configuration {
