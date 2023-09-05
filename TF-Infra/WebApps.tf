@@ -10,7 +10,6 @@ resource "azurerm_application_insights_web_test" "tetris_appinsights" {
   resource_group_name = var.resource_group_name
   application_insights_id = azurerm_application_insights.tetris_ai.id
   location       = azurerm_application_insights.tetris_ai.location
-  application_type    = "web"
   kind                    = "ping"
   frequency               = 300
   timeout                 = 60
