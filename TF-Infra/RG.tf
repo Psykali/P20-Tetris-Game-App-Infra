@@ -3,11 +3,12 @@
 ##########
 locals {
   common_tags = {
-    CreatedBy = "SK"
-    Env       = "Prod"
-    Why       = "DipP20"
-    Proj      = "TetrisGameAppInfra"
-    Infratype = ""
+    CreatedBy   = "SK"
+    Env         = "Prod"
+    Why         = "DipP20"
+    Proj        = "TetrisGameAppInfra"
+    Infratype   = "PaaS-IaC"
+    Ressources  = "ASP-WA-AGW-ContReg-DockerImg"
   }
 }
 ############################
