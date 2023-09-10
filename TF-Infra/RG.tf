@@ -6,6 +6,8 @@ locals {
     CreatedBy = "SK"
     Env       = "Prod"
     Why       = "DipP20"
+    Proj      = "TetrisGameAppInfra"
+    Infratype = ""
   }
 }
 ############################
